@@ -1,20 +1,23 @@
+import base64
 import pickle as pkl
+
 import pandas as pd
 import requests
 import streamlit as st
-import base64
 
 movie_dict = pkl.load(open('movie_dict.pkl', 'rb'))
 cosine_sim = pkl.load(open('cosine_sim.pkl', 'rb'))
 movies_genres = pkl.load(open('movies_genres.pkl', 'rb'))
 movies = pd.DataFrame(movie_dict)
 
-#Set background image
+
+# Set background image
 @st.cache(allow_output_mutation=True)
 def get_base64_of_bin_file(bin_file):
     with open(bin_file, 'rb') as f:
         data = f.read()
     return base64.b64encode(data).decode()
+
 
 def set_png_as_page_bg(png_file):
     bin_str = get_base64_of_bin_file(png_file)
@@ -33,7 +36,7 @@ def set_png_as_page_bg(png_file):
 
 # Function to fetch moive poster using tmdb API
 def fetch_poster(movie_id):
-    url = "https://api.themoviedb.org/3/movie/{}?api_key=<<api_key>>&language=en-US".format(
+    url = "https://api.themoviedb.org/3/movie/{}?api_key=0a6075ba17e3534db79908bdd8875474&language=en-US".format(
         movie_id)
     data = requests.get(url)
 
@@ -57,7 +60,7 @@ def fetch_poster(movie_id):
 # Function to fetch movie details
 def fetch_movie_details(movie_id):
     try:
-        url = "https://api.themoviedb.org/3/movie/{}?api_key=<<api_key>>&language=en-US".format(
+        url = "https://api.themoviedb.org/3/movie/{}?api_key=0a6075ba17e3534db79908bdd8875474&language=en-US".format(
             movie_id)
         data = requests.get(url)
 
@@ -79,7 +82,7 @@ def fetch_movie_details(movie_id):
 # Function to fetch cast and crew of movie
 def fetch_movie_cast_crew(movie_id):
     try:
-        url = "https://api.themoviedb.org/3/movie/{}/credits?api_key=<<api_key>>&language=en-US".format(
+        url = "https://api.themoviedb.org/3/movie/{}/credits?api_key=0a6075ba17e3534db79908bdd8875474&language=en-US".format(
             movie_id)
         data = requests.get(url)
         data.raise_for_status()
@@ -151,6 +154,7 @@ def get_genre_based_recommendation(genre, number_of_movies):
         movie_poster_list.append(poster)
         overview = fetch_movie_details(id)
         score = movies[movies['id'] == i].weighted_score
+        score = score.iloc[0]
         movie_overview_list.append(overview)
         movie_score_list.append(float(score))
         cast, crew = fetch_movie_cast_crew(id)
@@ -162,9 +166,9 @@ def get_genre_based_recommendation(genre, number_of_movies):
 
 
 # Main function to get recommendations based on movie
-def get_recommendations(title, number_of_movies):
+def get_recommendations(title_of_movie, number_of_movies):
     # Get the index of the movie that matches the title
-    index = movies[movies['title'] == title].index[0]
+    index = movies[movies['title'] == title_of_movie].index[0]
 
     # Calculate sim_scores based on distances
     sim_scores = sorted(list(enumerate(cosine_sim[index])), reverse=True, key=lambda x: x[1])
@@ -184,21 +188,21 @@ def get_recommendations(title, number_of_movies):
 
     # Get movie details
     for i in movie_indices:
-        for i in movie_indices:
-            id = movies['id'].iloc[i]
-            title = movies[movies['id'] == id].title
-            title = title.squeeze()
-            poster = fetch_poster(id)
-            movie_name_list.append(title)
-            movie_poster_list.append(poster)
-            overview = fetch_movie_details(id)
-            score = movies[movies['id'] == id].weighted_score
-            movie_overview_list.append(overview)
-            movie_score_list.append(float(score))
-            cast, crew = fetch_movie_cast_crew(id)
-            movie_crew_list.append(crew)
-            movie_cast_list.append(cast)
-            link = fetch_movie_link(id, title)
-            movie_link_list.append(link)
+        id = movies['id'].iloc[i]
+        m_title = movies[movies['id'] == id].title
+        m_title = m_title.squeeze()
+        poster = fetch_poster(id)
+        movie_name_list.append(m_title)
+        movie_poster_list.append(poster)
+        overview = fetch_movie_details(id)
+        score = movies[movies['id'] == id].weighted_score
+        score = score.iloc[0]
+        movie_overview_list.append(overview)
+        movie_score_list.append(float(score))
+        cast, crew = fetch_movie_cast_crew(id)
+        movie_crew_list.append(crew)
+        movie_cast_list.append(cast)
+        link = fetch_movie_link(id, m_title)
+        movie_link_list.append(link)
 
     return movie_name_list, movie_poster_list, movie_overview_list, movie_crew_list, movie_cast_list, movie_score_list, movie_link_list
