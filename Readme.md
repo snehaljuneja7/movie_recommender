@@ -13,7 +13,8 @@ Dataset used: [TMDB 5000 movie dataset](https://www.kaggle.com/datasets/tmdb/tmd
 
 ## To run project on local machine:
 1. Clone or download this repository to your local machine.
-2. Install all the libraries mentioned in the requirements.txt.
-3. Get your API key from https://www.themoviedb.org/.
-4. Replace API key in lines 36, 60, 82 of helper.py file with your API key.
-5. Open your terminal/command prompt from your project directory and run the file `app.py` by executing the command `streamlit run app.py`.
+2. Run jupyter notebook to create cosine_sim.pkl in main directory.
+3. Install all the libraries mentioned in the requirements.txt.
+4. Get your API key from https://www.themoviedb.org/.
+5. Replace API key in lines 36, 60, 82 of helper.py file with your API key.
+6. Open your terminal/command prompt from your project directory and run the file `app.py` by executing the command `streamlit run app.py`.
