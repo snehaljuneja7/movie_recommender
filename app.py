@@ -54,10 +54,7 @@ if st.button('Show Recommendations'):
 
     # Sort based on popularity if checkbox selected
     if sort:
-        recommended_movies = recommended_movies.sort_values(by=['Weighted_score'], ascending=False)
-
-    # Keep count of number of recommended movies displayed
-    j = 0
+        recommended_movies = recommended_movies.sort_values(by="Weighted_score", ascending=False)
 
     if recommend_type == 'Movie based recommendation':
         st.write("If you liked ", movie_name, " you may also like: ")
@@ -66,14 +63,13 @@ if st.button('Show Recommendations'):
     for i in range(1, number_of_movies + 1):
         c = st.container()
         with c:
-            st.subheader(str(recommended_movies['Title'].iloc[j]))
+            st.subheader(str(recommended_movies['Title'].iloc[i-1]))
             col1, col2 = st.columns([1, 4])
             with col1:
-                st.image(movie_poster_list[j])
+                st.image(recommended_movies['Poster'].iloc[i-1])
             with col2:
-                st.write("Overview: ", recommended_movies['Overview'].iloc[j])
-                st.write("Cast: ", ", ".join(str(e) for e in recommended_movies['Cast'].iloc[j]))
-                st.write("Director: ", ", ".join(str(e) for e in recommended_movies['Crew'].iloc[j]))
-                link = recommended_movies['Link'].iloc[j]
-                st.write("To know more check out this [link](%s)" % recommended_movies['Link'].iloc[j])
-        j += 1
+                st.write("Overview: ", recommended_movies['Overview'].iloc[i-1])
+                st.write("Cast: ", ", ".join(str(e) for e in recommended_movies['Cast'].iloc[i-1]))
+                st.write("Director: ", ", ".join(str(e) for e in recommended_movies['Crew'].iloc[i-1]))
+                link = recommended_movies['Link'].iloc[i-1]
+                st.write("To know more check out this [link](%s)" % recommended_movies['Link'].iloc[i-1])
